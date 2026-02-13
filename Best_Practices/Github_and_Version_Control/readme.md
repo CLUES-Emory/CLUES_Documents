@@ -22,6 +22,7 @@ If you are new to this repository or to using GitHub with Claude Code, start her
 | [setup-windows.md](setup-windows.md) | Installation and setup for Windows PowerShell |
 | [setup-vscode.md](setup-vscode.md) | Installation and setup for VS Code (cross-platform) |
 
+
 ## Questions or Issues
 
 If something in the pipeline is not working as expected or you have a question about the workflow, open a [GitHub Issue](../../issues) in this repository. Use a clear, descriptive title and include enough detail for someone else to understand or reproduce the problem.
