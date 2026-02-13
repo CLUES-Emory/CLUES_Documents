@@ -1,4 +1,4 @@
-# CLUES Lab XCMS Processing Pipeline
+# Version control and best practices overview
 
 This repository contains documentation for version control best practices using GitHub to support computational workflows in the [Comprehensive Laboratory for Untargeted Exposome Science (CLUES)](https://github.com/clues-lab) at Emory University. It covers Git fundamentals, the use of Claude Code as an AI-assisted development tool, and standardized workflows for collaborative code development in exposomics and metabolomics research.
 
@@ -21,24 +21,6 @@ If you are new to this repository or to using GitHub with Claude Code, start her
 | [setup-mac.md](setup-mac.md) | Installation and setup for Mac Terminal |
 | [setup-windows.md](setup-windows.md) | Installation and setup for Windows PowerShell |
 | [setup-vscode.md](setup-vscode.md) | Installation and setup for VS Code (cross-platform) |
-
-## Quick Start
-
-Once your environment is set up, the typical workflow is:
-
-```
-git clone https://github.com/clues-lab/repo-name.git
-cd repo-name
-claude
-```
-
-Then in Claude Code:
-
-```
-create a branch called feature/my-new-feature
-```
-
-Make your changes, review, commit, and open a pull request. See the [full workflow](github-claude-code-manual.md#the-standard-workflow) for details.
 
 ## Questions or Issues
 
