@@ -40,7 +40,7 @@ Claude Code works in three environments. Choose the one that fits your setup and
 |---|---|---|
 | Mac Terminal | Mac users comfortable with the command line | [Setup Guide for Mac](setup-mac.md) |
 | Windows PowerShell | Windows users comfortable with the command line | [Setup Guide for Windows](setup-windows.md) |
-| VS Code | Anyone who prefers a visual editor; mixed Mac/Windows teams | [Setup Guide for Windows](setup-vscode.md) |
+| VS Code | Anyone who prefers a visual editor; mixed Mac/Windows teams | [Setup Guide for VS Code](setup-vscode.md) |
 
 If you are unsure which to use, start with VS Code. It provides the same Claude Code functionality with a familiar editor interface and works identically on Mac and Windows.
 
