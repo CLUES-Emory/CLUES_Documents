@@ -38,9 +38,9 @@ Claude Code works in three environments. Choose the one that fits your setup and
 
 | Environment | Best for | Setup guide |
 |---|---|---|
-| Mac Terminal | Mac users comfortable with the command line | [Setup Guide for Mac](setup-mac.md) |
-| Windows PowerShell | Windows users comfortable with the command line | [Setup Guide for Windows](setup-windows.md) |
-| VS Code | Anyone who prefers a visual editor; mixed Mac/Windows teams | [Setup Guide for VS Code](setup-vscode.md) |
+| Mac Terminal | Mac users comfortable with the command line | `setup-mac.md` |
+| Windows PowerShell | Windows users comfortable with the command line | `setup-windows.md` |
+| VS Code | Anyone who prefers a visual editor; mixed Mac/Windows teams | `setup-vscode.md` |
 
 If you are unsure which to use, start with VS Code. It provides the same Claude Code functionality with a familiar editor interface and works identically on Mac and Windows.
 
@@ -384,12 +384,42 @@ The PR will automatically update with your new commits.
 
 ### Step 9: Merge
 
-Once the PR is approved, it can be merged into `main` on GitHub. After merging, clean up your local environment:
+Once the PR is approved, merge it into `main` on GitHub using **squash and merge** (see the Merge Strategy section below for details). Click the dropdown arrow next to the green merge button, select "Squash and merge", review the commit message, and confirm. After merging, clean up your local environment:
 
 ```
 switch to main and pull the latest changes
 delete the feature/add-blank-subtraction branch
 ```
+
+## Merge Strategy: Squash and Merge
+
+When a pull request is approved and ready to merge into `main`, GitHub offers three options for how to combine the branch history. The CLUES lab uses **squash and merge** as the default for all repositories.
+
+### What Squash and Merge Does
+
+Squash and merge takes all the commits from your branch — however many there are — and compresses them into a single commit on `main`. If your branch had 12 commits including "WIP", "fix typo", and "oops forgot a semicolon", the main branch gets one clean commit with the PR title as its message.
+
+This means the `main` branch history reads like a list of completed features and fixes, one entry per merged PR. The detailed commit-by-commit history from the branch is not lost — it remains visible on GitHub through the closed PR page if anyone needs to see the step-by-step development.
+
+### Why This Approach
+
+Squash and merge is the most forgiving strategy for a team where members have varying levels of Git experience. You do not need to worry about crafting perfect individual commits while working on your branch. Use as many commits as you need during development — commit frequently, commit messy work-in-progress snapshots, commit after every small change. When the PR merges, all of that gets cleaned up automatically into one meaningful commit on `main`.
+
+### The Other Options (and Why We Don't Use Them)
+
+**Merge commit** preserves every individual commit from the branch and adds an extra merge commit on top. This keeps complete history but makes the `main` branch harder to read, especially when branches contain many small or unclear commits. The history fills with entries like "fix typo", "WIP", and "address review comments" that obscure the meaningful changes.
+
+**Rebase and merge** replays each branch commit onto `main` individually, creating a linear history without merge commits. This produces the cleanest-looking history but requires that every commit on the branch is well-crafted and meaningful — an unrealistic expectation for a team that is still learning Git. It also rewrites commit hashes, which can cause confusion.
+
+### How to Squash and Merge on GitHub
+
+When you click the green "Merge pull request" button on GitHub, look for a small dropdown arrow next to it. Click the arrow and select "Squash and merge." GitHub will prompt you to edit the commit message — by default it uses the PR title, which is usually what you want. Review the message, then confirm.
+
+If the repository is configured correctly, "Squash and merge" will already be the default option. Doug can configure this in the repository settings under Settings → General → Pull Requests by selecting "Allow squash merging" and deselecting the other two options if the lab wants to enforce this as the only available strategy.
+
+### Practical Implications for Your Workflow
+
+Because we squash and merge, you should put your effort into writing a good PR title and description rather than perfecting individual commit messages on your branch. The PR title becomes the commit message on `main`, so make it clear and descriptive following the conventions in the Naming Conventions section. Your individual branch commits can be as rough as you need them to be — they are development artifacts, not permanent history.
 
 ## Maintaining a Changelog
 
@@ -560,7 +590,45 @@ For research code, tying tags to meaningful events is often more useful than str
 | `v3.0-pfas-placenta-cohort` | Pipeline version used for a specific study |
 | `v1.0-exposome-course-2026` | Stable version shared with students |
 
-If you prefer formal semantic versioning, the convention is `vMAJOR.MINOR.PATCH`: bump the major number for breaking changes to the pipeline, the minor number for new features or processing steps, and the patch number for bug fixes. For example, `v1.0.0` to `v1.1.0` when you add a new blank subtraction step, and `v1.1.0` to `v1.1.1` when you fix a bug in that step.
+If you prefer formal semantic versioning, the convention is `vMAJOR.MINOR.PATCH` — three numbers separated by dots, each with a specific meaning:
+
+**MAJOR** (first number) — increment when you make breaking changes that fundamentally alter how the pipeline works. A breaking change means that someone using the previous version cannot simply update and expect the same behavior. If someone ran the pipeline with `v1.x.x` and then switches to `v2.0.0`, they should expect different output, different required inputs, or a different workflow.
+
+**MINOR** (second number) — increment when you add new functionality that does not break existing behavior. The pipeline still works the same way as before, but now it can do more. When you bump the minor number, reset the patch number to zero.
+
+**PATCH** (third number) — increment when you fix a bug without adding new features or changing existing behavior. The pipeline does the same thing as before, but now it does it correctly.
+
+Here is how this plays out in practice for an XCMS processing pipeline:
+
+| Version change | What happened | Why this level |
+|---|---|---|
+| `v1.0.0` → `v2.0.0` | Replaced CentWave with MatchedFilter for peak detection | Breaking: fundamentally different algorithm, all downstream results change |
+| `v1.0.0` → `v2.0.0` | Restructured scripts so input/output paths changed | Breaking: existing workflows that depend on file paths will fail |
+| `v1.0.0` → `v2.0.0` | Changed from CSV to Parquet output format | Breaking: downstream code expecting CSV will not work |
+| `v1.0.0` → `v1.1.0` | Added blank subtraction step | Addition: new processing step, but existing steps still work the same |
+| `v1.1.0` → `v1.2.0` | Added PCA visualization after batch correction | Addition: new output, existing outputs unchanged |
+| `v1.2.0` → `v1.3.0` | Added support for HILIC column parameters | Addition: new capability, existing RP C18 processing unaffected |
+| `v1.3.0` → `v1.3.1` | Fixed gap-filling failure on samples with zero detected peaks | Fix: corrects a bug, no new features |
+| `v1.3.1` → `v1.3.2` | Fixed off-by-one error in RT window calculation | Fix: corrects a bug, no new features |
+| `v1.3.2` → `v1.3.3` | Fixed QC CV plot not displaying axis labels | Fix: cosmetic correction, no change to data processing |
+
+A few rules of thumb to keep version numbering simple:
+
+- Always start a project at `v1.0.0` (not `v0.1.0` unless the pipeline is truly experimental and you expect breaking changes frequently)
+- When you bump MAJOR, reset MINOR and PATCH to zero: `v1.3.2` → `v2.0.0`
+- When you bump MINOR, reset only PATCH to zero: `v1.3.2` → `v1.4.0`
+- If a single PR includes both a new feature and a bug fix, bump MINOR (the higher level wins)
+- If you are unsure whether a change is breaking, ask: "Would someone running the previous version get different results or errors if they updated?" If yes, it is a MAJOR change
+
+You can combine semantic versioning with descriptive suffixes for clarity:
+
+```
+create an annotated tag v2.0.0-hilic-refactor with the message "Restructured pipeline to support both RP C18 and HILIC methods"
+```
+
+```
+create an annotated tag v1.3.1-fix-gapfill with the message "Fixed gap-filling failure on samples with zero detected peaks"
+```
 
 ### Tags and GitHub Releases
 
